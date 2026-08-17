@@ -112,6 +112,11 @@ def get_train_val_image_prompt_list(data_dir):
     val_meta = base / "validation" / "metadata.jsonl"
     if train_meta.exists() and val_meta.exists():
 
+        # Load the custom clothing prompts
+        prompt_path = Path(__file__).parent.parent.parent / "configs" / "clothing_prompts.json"
+        with open(prompt_path, "r") as pf:
+            custom_prompts = json.load(pf)["prompts"]
+
         def read_meta(meta_path: Path):
             out = []
             with meta_path.open("r") as f:
@@ -124,7 +129,7 @@ def get_train_val_image_prompt_list(data_dir):
 
                     out.append({
                         "image": img_filename,
-                        "prompts": row["prompts"],
+                        "prompts": random.sample(custom_prompts, 2),
                     })
             return out
 

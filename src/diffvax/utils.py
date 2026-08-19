@@ -148,6 +148,10 @@ def ensure_dataset_in_data_dir(
     data_dir = Path(data_dir)
     data_dir.mkdir(exist_ok=True)
 
+    # Se as pastas train e validation já existem, não precisa baixar!
+    if (data_dir / "train").exists() and (data_dir / "validation").exists():
+        return data_dir
+
     marker = data_dir / ".hf_ready"
     if marker.exists():
         return data_dir

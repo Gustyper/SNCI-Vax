@@ -16,7 +16,7 @@ tqdm>=4.65.0
 matplotlib>=3.7.0
 pandas>=2.0.0
 
-# Restrições 
+# Restrições
 open_clip_torch>=2.24.0
 facenet-pytorch>=2.5.3
 lpips>=0.1.4

@@ -22,7 +22,7 @@ def main():
     unet.eval()
     
     # 2. Load Image
-    img_path = "data/train/images/00000.png"
+    img_path = "/content/drive/MyDrive/DiffVax_Data/train/images/image_0.png"
     if not os.path.exists(img_path):
         print(f"Warning: {img_path} not found. Creating a dummy blue image for testing.")
         original_pil = Image.new("RGB", (512, 512), color="blue")
@@ -30,7 +30,7 @@ def main():
         original_pil = Image.open(img_path).convert("RGB").resize((512, 512))
     
     # Prepare tensor [-1, 1] for U-Net
-    img_tensor = prepare_image_return_3d(original_pil).unsqueeze(0).to(device)
+    img_tensor = prepare_image_return_3d(original_pil).to(device)
     
     # 3. Forward Pass (Immunization)
     print("Generating adversarial noise via U-Net...")

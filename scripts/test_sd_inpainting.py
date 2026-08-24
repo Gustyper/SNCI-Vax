@@ -7,9 +7,11 @@ import argparse
 def main():
     parser = argparse.ArgumentParser(description="Test SD Inpainting on an image")
     parser.add_argument("--image", type=str, default="outputs/immunized_image.png", help="Path to the input immunized image")
-    parser.add_argument("--mask", type=str, default="data/train/masks/mask_00000.png", help="Path to the mask image")
+    parser.add_argument("--mask", type=str, default="/content/drive/MyDrive/DiffVax_Data/train/masks/mask_image_0.png", help="Path to the mask image")
     parser.add_argument("--prompt", type=str, default="a person wearing a red jacket", help="Prompt for inpainting")
     parser.add_argument("--output", type=str, default="outputs/sd_edited_result.png", help="Path to save the generated result")
+    parser.add_argument("--cache_dir", type=str, default="/content/drive/MyDrive/huggingface_cache", help="Path to cache HuggingFace models (ideal for Colab)")
+    parser.add_argument("--invert_mask", action="store_true", help="Invert the mask colors (white to black, black to white)")
     args = parser.parse_args()
 
     device = "cuda" if torch.cuda.is_available() else "cpu"
@@ -29,11 +31,16 @@ def main():
     else:
         mask_pil = Image.open(args.mask).convert("L").resize((512, 512))
         
+    if args.invert_mask:
+        import PIL.ImageOps
+        mask_pil = PIL.ImageOps.invert(mask_pil)
+        
     # 2. Load Pipeline
     print("Loading SD Inpainting Pipeline (FP16)...")
     pipe = StableDiffusionInpaintPipeline.from_pretrained(
         "runwayml/stable-diffusion-inpainting",
-        torch_dtype=torch.float16
+        torch_dtype=torch.float16,
+        cache_dir=args.cache_dir
     ).to(device)
     # pipe.enable_xformers_memory_efficient_attention() # Optional to save VRAM
     

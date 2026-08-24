@@ -63,8 +63,13 @@ class SDInpaintingSurrogate(BaseSurrogate):
             prompts: List[str] length B.
         """
         device = immunized_images.device
-        dtype = immunized_images.dtype
+        dtype = self.unet.dtype
         batch_size = immunized_images.shape[0]
+        
+        # Ensure inputs match the model's precision
+        immunized_images = immunized_images.to(dtype)
+        original_images = original_images.to(dtype)
+        masks = masks.to(dtype)
         
         # 1. Get Text Embeddings
         text_embeddings = self._get_text_embeddings(prompts, device).to(dtype)

@@ -28,6 +28,8 @@ def main():
     parser.add_argument("--data-dir", type=str, default="data")
     parser.add_argument("--output-dir", type=str, default="outputs")
     parser.add_argument("--disable-sd15", action="store_true", help="Disable SD 1.5 Surrogate")
+    parser.add_argument("--masks-subdir", type=str, default=None, help="Override masks directory (e.g. train/maks_clothing)")
+    parser.add_argument("--mask-prefix", type=str, default=None, help="Prefix for mask files (e.g. mask_clothing_)")
     args = parser.parse_args()
 
     with open(args.config, "r") as file:
@@ -70,7 +72,8 @@ def main():
         train_list, 
         data_dir, 
         images_subdir=config.get("images_subdir", "train/images"),
-        masks_subdir=config.get("masks_subdir", "train/masks")
+        masks_subdir=args.masks_subdir if args.masks_subdir else config.get("masks_subdir", "train/masks"),
+        mask_prefix=args.mask_prefix if args.mask_prefix else config.get("mask_prefix", "mask_")
     )
     
     train_loader = DataLoader(train_dataset, batch_size=config["batch_size"], shuffle=True)

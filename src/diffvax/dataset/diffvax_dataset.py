@@ -3,7 +3,7 @@ from torch.utils.data import Dataset
 from diffvax.utils import load_image, prepare_mask_and_masked_image
 
 class DiffVaxDataset(Dataset):
-    def __init__(self, image_prompt_list, data_dir, images_subdir="train/images", masks_subdir="train/masks"):
+    def __init__(self, image_prompt_list, data_dir, images_subdir="train/images", masks_subdir="train/masks", mask_prefix="mask_"):
         """
         Args:
             image_prompt_list (list): List of dicts with 'image' (filename) and 'prompts' (list of strings).
@@ -12,6 +12,7 @@ class DiffVaxDataset(Dataset):
         self.data_dir = data_dir
         self.images_subdir = images_subdir
         self.masks_subdir = masks_subdir
+        self.mask_prefix = mask_prefix
         
         # Flatten prompts so each sample has exactly one prompt
         self.samples = []
@@ -44,6 +45,7 @@ class DiffVaxDataset(Dataset):
             is_mask=True,
             images_subdir=self.images_subdir,
             masks_subdir=self.masks_subdir,
+            mask_prefix=self.mask_prefix,
         )
         
         mask_torch, image_torch, non_masked_image_torch = prepare_mask_and_masked_image(

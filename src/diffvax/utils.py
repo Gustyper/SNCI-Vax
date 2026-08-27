@@ -63,12 +63,12 @@ def set_seed_lib(seed):
     set_seed(seed)
 
 
-def load_image(image_name, data_dir, is_mask=False, images_subdir="images", masks_subdir="masks"):
+def load_image(image_name, data_dir, is_mask=False, images_subdir="images", masks_subdir="masks", mask_prefix="mask_"):
     """Load image or mask from data directory."""
     data_path = Path(data_dir)
     if is_mask:
         image = (
-            Image.open(data_path / masks_subdir / f"mask_{image_name}.png")
+            Image.open(data_path / masks_subdir / f"{mask_prefix}{image_name}.png")
             .convert("RGB")
             .resize((512, 512))
         )

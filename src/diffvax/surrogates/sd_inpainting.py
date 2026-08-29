@@ -9,13 +9,14 @@ class SDInpaintingSurrogate(BaseSurrogate):
     Strategy: Early-timestep attack (inspired by DiffusionGuard).
     Loss: Maximize the L2 norm of the predicted noise at the initial timestep T.
     """
-    def __init__(self, model_id="runwayml/stable-diffusion-inpainting", timestep=50):
+    def __init__(self, model_id="runwayml/stable-diffusion-inpainting", timestep=50, cache_dir=None):
         super().__init__()
         # Load the pipeline in fp16 to save memory
         self.pipe = StableDiffusionInpaintPipeline.from_pretrained(
             model_id,
             torch_dtype=torch.float16,
-            safety_checker=None
+            safety_checker=None,
+            cache_dir=cache_dir
         )
         self.timestep = timestep
         

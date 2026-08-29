@@ -55,6 +55,7 @@ def main():
     parser.add_argument("--masks-subdir", type=str, default=None, help="Override train masks directory (e.g. train/maks_clothing)")
     parser.add_argument("--val-masks-subdir", type=str, default=None, help="Override val masks directory (e.g. validation/maks_clothing)")
     parser.add_argument("--mask-prefix", type=str, default=None, help="Prefix for mask files (e.g. mask_clothing_)")
+    parser.add_argument("--cache-dir", type=str, default="/content/drive/MyDrive/huggingface_cache", help="Path to cache HuggingFace models (ideal for Colab)")
     parser.add_argument("--use-wandb", action="store_true", help="Enable Weights & Biases logging")
     parser.add_argument("--patience", type=int, default=15, help="Early stopping patience (epochs)")
     parser.add_argument("--min-delta", type=float, default=1e-4, help="Early stopping min delta")
@@ -97,7 +98,7 @@ def main():
     surrogate_sd = None
     if "sd15" in active_surrogates:
         accelerator.print("Loading SD 1.5 Inpainting Surrogate...")
-        surrogate_sd = SDInpaintingSurrogate().eval()
+        surrogate_sd = SDInpaintingSurrogate(cache_dir=args.cache_dir).eval()
         # Ensure it's frozen
         for param in surrogate_sd.parameters():
             param.requires_grad = False

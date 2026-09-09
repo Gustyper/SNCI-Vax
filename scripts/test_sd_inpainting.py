@@ -36,10 +36,12 @@ def main():
         mask_pil = PIL.ImageOps.invert(mask_pil)
         
     # 2. Load Pipeline
-    print("Loading SD Inpainting Pipeline (FP16)...")
+    print("Loading SD Inpainting Pipeline (FP16, Safety Checker Disabled)...")
     pipe = StableDiffusionInpaintPipeline.from_pretrained(
         "runwayml/stable-diffusion-inpainting",
         torch_dtype=torch.float16,
+        safety_checker=None,
+        requires_safety_checker=False,
         cache_dir=args.cache_dir
     ).to(device)
     # pipe.enable_xformers_memory_efficient_attention() # Optional to save VRAM

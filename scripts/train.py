@@ -59,11 +59,15 @@ def main():
     parser.add_argument("--use-wandb", action="store_true", help="Enable Weights & Biases logging")
     parser.add_argument("--patience", type=int, default=15, help="Early stopping patience (epochs)")
     parser.add_argument("--min-delta", type=float, default=1e-4, help="Early stopping min delta")
+    parser.add_argument("--epochs", type=int, default=300, help="Maximum number of epochs to train (default: 300)")
+    parser.add_argument("--batch-size", type=int, default=None, help="Batch size per GPU (overrides config)")
     args = parser.parse_args()
 
     with open(args.config, "r") as file:
         config = yaml.safe_load(file)
 
+    if args.batch_size is not None:
+        config["batch_size"] = args.batch_size
     config["data_dir"] = args.data_dir
     config["output_dir"] = args.output_dir
     
@@ -146,7 +150,9 @@ def main():
     best_model_path = os.path.join(args.output_dir, "diffvax_best.pth")
 
     # 6. Training Loop
-    iter_num = config.get("iter_num", 10000)
+    max_epochs = args.epochs
+    steps_per_epoch = len(train_loader)
+    total_steps = min(config.get("iter_num", 1000000), max_epochs * steps_per_epoch)
     
     if accelerator.is_main_process:
         with open(history_csv, "w", newline="") as f:
@@ -156,15 +162,15 @@ def main():
     global_step = 0
     epoch = 0
     
-    progress_bar = tqdm(total=iter_num, disable=not accelerator.is_local_main_process, desc="Training")
+    progress_bar = tqdm(total=total_steps, disable=not accelerator.is_local_main_process, desc="Training")
     
-    while global_step < iter_num:
+    while epoch < max_epochs and global_step < total_steps:
         immunizer_unet.train()
         epoch_loss_sum = 0.0
         epoch_steps = 0
 
         for batch in train_loader:
-            if global_step >= iter_num:
+            if global_step >= total_steps:
                 break
                 
             original_images = batch["image"]

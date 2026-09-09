@@ -16,6 +16,7 @@ class SDInpaintingSurrogate(BaseSurrogate):
             model_id,
             torch_dtype=torch.float16,
             safety_checker=None,
+            requires_safety_checker=False,
             cache_dir=cache_dir
         )
         self.timestep = timestep

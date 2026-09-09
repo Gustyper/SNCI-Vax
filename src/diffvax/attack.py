@@ -16,6 +16,8 @@ class Attack:
         pipe_inpaint = StableDiffusionInpaintPipeline.from_pretrained(
             model_link,
             torch_dtype=torch.float16,
+            safety_checker=None,
+            requires_safety_checker=False,
         )
         if scheduler == "DDIM":
             pipe_inpaint.scheduler = DDIMScheduler.from_config(
